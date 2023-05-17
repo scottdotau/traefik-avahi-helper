@@ -11,10 +11,8 @@ const testValues = [
 	"HOST(`foo.example.local`) || ( Host(`baz.example.com`) && Path(`/baz`) )",
 	"Host(`bill.example.com`) || ( Path(`/ben`) && Host(`ben.example.local`) )",
 	"Host( `foo.com`, `bar.local`)"
-	
-	
-	
 ]
+
 const matchDomainCnames = function (domainString) {
 	return [...domainString.matchAll(domainRegExp)].map(match => match.groups.domain)
 }
