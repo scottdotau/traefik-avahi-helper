@@ -1,25 +1,14 @@
 import Docker from 'dockerode';
 import fs from 'fs';
 import nodemon from 'nodemon';
-import { labelRegExp, hostRegExp, domainRegExp, matchDomainCnames } from './lib.js';
+import { labelRegExp, hostRegExp, domainRegExp, matchDomainCnames, mapTarget } from './lib.js';
 
 const docker = new Docker({socketPath: "/var/run/docker.sock"});
-const InSwarm = !!(await docker.info()).Swarm;
+const startEvents = ['start', 'create', 'update'];
+const stopEvents = ['stop', 'remove']; 
 let cnames = []; 
 
-const mapTarget = t => {
-  const IsSwarmService = !!t.Spec;
-  const target = IsSwarmService ? t.Spec : t;
-  const name = IsSwarmService ? target.Name : target.Names[0].substring(1)
-  return {
-    IsSwarmService,
-    TargetName: name,
-    ...target, 
-    _original: IsSwarmService ? t : null
-  } 
-}
-
-Promise.all([docker.listContainers(), InSwarm ? docker.listServices() : Promise.resolve([])])
+Promise.all([ docker.listContainers(), docker.listServices() ]) 
 .then( list => {
   const targets = list.flat()
     .map(t => mapTarget(t)) 
@@ -52,8 +41,6 @@ Promise.all([docker.listContainers(), InSwarm ? docker.listServices() : Promise.
   })
 })
 .then(() => {
-  const startEvents = ['start', 'create', 'update'];
-  const stopEvents = ['stop', 'remove'];
   docker.getEvents({filters: { event: [ ...startEvents, ...stopEvents ]}})
   .then( events => {
     events.setEncoding('utf8');
