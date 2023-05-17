@@ -1,17 +1,14 @@
 const Docker = require("dockerode")
 const fs = require('fs')
 const nodemon = require('nodemon')
+const { labelRegExp, hostRegExp, domainRegExp } = require('./config.js')
 
 const docker = new Docker({socketPath: "/var/run/docker.sock"});
-
-const re = /traefik\.http\.routers\.(.*)\.rule/
-const checkRe = /Host\(\s*`(.*?\.local)`\s*,*\s*\)/gi
-const domainRe = /`(?<domain>[^`]*?\.local)`/g
 
 let cnames = [];
 
 const matchDomainCnames = function (domainString) {
-  return [...domainString.matchAll(domainRe)].map(match => match.groups.domain)
+  return [...domainString.matchAll(domainRegExp)].map(match => match.groups.domain)
 }
 
 docker.listContainers()
@@ -22,8 +19,8 @@ docker.listContainers()
       var name = cont.Names[0].substring(1)
       var keys = Object.keys(cont.Labels)
       keys.forEach(key =>{
-        if (re.test(key) && checkRe.test(cont.Labels[key])) {
-          checkRe.lastIndex=0
+        if (re.test(key) && hostRegExp.test(cont.Labels[key])) {
+          hostRegExp.lastIndex=0
           cnames = cnames.concat(matchDomainCnames(cont.Labels[key]))
         }
       })
@@ -58,7 +55,7 @@ docker.listContainers()
 
       var keys = Object.keys(eventJSON.Actor.Attributes)
       keys.forEach(key => {
-        if (!re.test(key)) {
+        if (!labelRegExp.test(key)) {
           return;
         }
 
