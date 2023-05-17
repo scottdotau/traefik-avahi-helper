@@ -3,9 +3,10 @@
   "version": "1.0.1",
   "description": "",
   "main": "index.js",
+  "type": "module", 
   "dependencies": {
-    "dockerode": "^3.2.1",
-    "nodemon": "^2.0.4"
+    "dockerode": "3.3.5",
+    "nodemon": "2.0.22"
   },
   "devDependencies": {},
   "scripts": {

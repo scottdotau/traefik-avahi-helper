@@ -1,15 +1,10 @@
-const Docker = require("dockerode")
-const fs = require('fs')
-const nodemon = require('nodemon')
-const { labelRegExp, hostRegExp, domainRegExp } = require('./config.js')
+import Docker from 'dockerode';
+import fs from 'fs';
+import nodemon from 'nodemon';
+import { labelRegExp, hostRegExp, domainRegExp, matchDomainCnames } from './lib.js';
 
 const docker = new Docker({socketPath: "/var/run/docker.sock"});
-
 let cnames = [];
-
-const matchDomainCnames = function (domainString) {
-  return [...domainString.matchAll(domainRegExp)].map(match => match.groups.domain)
-}
 
 docker.listContainers()
 .then( list => {

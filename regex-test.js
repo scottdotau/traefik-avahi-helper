@@ -1,4 +1,4 @@
-const { labelRegExp, hostRegExp, domainRegExp } = require('./config.js')
+import { hostRegExp, matchDomainCnames } from './lib.js';
 
 const testValues = [
 	"Host(`example.local`)",
@@ -13,14 +13,10 @@ const testValues = [
 	"Host( `foo.com`, `bar.local`)"
 ]
 
-const matchDomainCnames = function (domainString) {
-	return [...domainString.matchAll(domainRegExp)].map(match => match.groups.domain)
-}
-
 testValues.forEach( l => {
 	if (hostRegExp.test(l)) {
 		hostRegExp.lastIndex = 0
-		console.log(matchDomaiames(l))
+		console.log(matchDomainCnames(l))
 	} else {
 		console.log("no match - " + l )
 	}
