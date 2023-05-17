@@ -1,0 +1,7 @@
+portainer.app.lan
+speedtest.app.lan
+pihole.warden.app.lan
+pihole.retro.app.lan
+gluetun.app.lan
+oauth.app.lan
+traefik.app.lan
